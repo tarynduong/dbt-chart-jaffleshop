@@ -1,0 +1,67 @@
+version: 2
+
+semantic_models:
+  - name: semantic_order_items
+    model: ref('stg_order_items')
+    defaults:
+      agg_time_dimension: order_date
+
+    entities:
+      - name: item_id
+        type: primary
+      - name: order_id
+        type: foreign
+      - name: product_id
+        type: foreign
+
+    dimensions:
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+
+    measures:
+      - name: item_count
+        agg: count
+        expr: item_id
+
+  - name: semantic_orders
+    model: ref('stg_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - name: order_id
+        type: primary
+      - name: customer_id
+        type: foreign
+    dimensions:
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+    measures:
+      - name: order_revenue_sum
+        agg: sum
+        expr: order_total
+
+  - name: semantic_products
+    model: ref('stg_products')
+    entities:
+      - name: product_id
+        type: primary
+    dimensions:
+      - name: product_type
+        type: categorical
+
+metrics:
+  - name: total_sales
+    label: "Total Sales Revenue"
+    type: simple
+    type_params:
+      measure: order_revenue_sum
+
+  - name: total_items_sold
+    label: "Total Number of Products Sold"
+    type: simple
+    type_params:
+      measure: item_count
