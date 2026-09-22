@@ -1,0 +1,4 @@
+dbt-charts[mcp]
+dbt-core
+dbt-duckdb
+dbt-metricflow
